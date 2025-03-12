@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// The "frontpage", where we generate words
+// The "frontpage", where we generate word pairs
 class GeneratorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
