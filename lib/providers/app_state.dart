@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +8,16 @@ class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   var history = <WordPair>[];
   String currentTitle = "a";
+  late final String readAccessKey;
+
+  MyAppState() {
+    String? key = dotenv.env["TMDB_READ_ACCESS_KEY"];
+    if (key == null) {
+      throw Exception("No read access key found in app_state init, does .env exist?");
+    }
+    readAccessKey = key;
+  }
+  
 
   GlobalKey? historyListKey;
 
@@ -40,7 +50,7 @@ class MyAppState extends ChangeNotifier {
     var response = await http.get(
       url, 
       headers: {
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI5ODY1OWI4NThjMGM4YjkwN2UwZDU4MDE1YzllYWIwYSIsIm5iZiI6MTc0MDYzNzg0NS41MjQsInN1YiI6IjY3YzAwNjk1YzE1M2VjZTJlMmEyMmY0OCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.AQ2zUonoogkh0jqdveCOcYIKuu-obuwVNVgxBECwY0A",
+        "Authorization": "Bearer $readAccessKey",
         "Accept": "application/json",
         "Content-Type": "application/json"
       },
@@ -57,6 +67,7 @@ class MyAppState extends ChangeNotifier {
       return movie["original_title"] as String;
     }).toList();
 
+    print(titles);
     currentTitle = titles.first;
     notifyListeners();
   }

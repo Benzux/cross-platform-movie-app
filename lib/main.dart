@@ -1,10 +1,23 @@
+import 'dart:io';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:go_router/go_router.dart';
 import 'package:movie_app/providers/app_state.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/cupertino.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+
+  await dotenv.load(fileName: ".env");
+  runApp(
+    MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_)=> MyAppState())
+    ],
+    child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,77 +26,104 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Movie App',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 156, 15, 244)),
-        ),
-        home: MyHomePage(),
+    return MaterialApp.router(
+      title: 'Movie App',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 109, 0, 199)),
+      ),
+      routerConfig: GoRouter(
+        routes: [
+          GoRoute(
+            path: "/", 
+            builder: (context, state) {
+              return MyHomePage(
+                GeneratorPage()
+              );
+            },
+          ),
+          GoRoute(
+            path: "/favourites", 
+            builder: (context, state) {
+              return MyHomePage(
+                FavouritesPage()
+              );
+            },
+          )
+        ]
       ),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  final Widget? child;
+  const MyHomePage(this.child);
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 // Navigation between the app's pages
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
-    Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = GeneratorPage();
-      case 1:
-        page = FavouritesPage();
-      default:
-        throw UnimplementedError("no widget for $selectedIndex");
+
+    if (Platform.isAndroid) {
+      return Scaffold(body: CustomNavigationRail(widget: widget));
     }
 
-// Navigation bar on the left side of the screen
+    /*if (Platform.isIOS) {
+      return CupertinoPageScaffold(
+        navigationBar: CupertinoNavigationBar.large(largeTitle: Text("Test")),
+        child: Text("test"),
+      );
+    }*/
+    return Container();
+  }
+}
+
+class CustomNavigationRail extends StatelessWidget {
+  const CustomNavigationRail({super.key, required this.widget});
+
+  final MyHomePage widget;
+
+  @override
+  Widget build(BuildContext context) {
     return LayoutBuilder(
-      builder: (context, constraints) {
-        return Scaffold(
-          body: Row(
+        builder: (context, constraints) {
+          return Row(
             children: [
               SafeArea(
                 child: NavigationRail(
                   extended: constraints.maxWidth >= 600,
                   destinations: [
                     NavigationRailDestination(
-                      icon: Icon(Icons.home),
+                      icon: GestureDetector(
+                        child: Icon(Icons.home),
+                        onTap: () => context.go("/"),
+                      ),
                       label: Text('Home'),
                     ),
                     NavigationRailDestination(
-                      icon: Icon(Icons.favorite),
+                      icon: GestureDetector(
+                        child: Icon(Icons.favorite),
+                        onTap: () => context.go("/favourites"),
+                        ),
                       label: Text('Favourites'),
                     ),
                   ],
-                  selectedIndex: selectedIndex,
-                  onDestinationSelected: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                  },
+                  selectedIndex: null,
                 ),
               ),
               Expanded(
                 child: Container(
                   color: Theme.of(context).colorScheme.primaryContainer,
-                  child: page,
+                  child: widget.child,
                 ),
               ),
             ],
-          ),
-        );
-      }
+          );
+        }
     );
   }
 }
