@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:movie_app/providers/app_state.dart';
+import 'package:movie_app/providers/movieapp.dart';
+import 'package:movie_app/views/generator_page.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -13,7 +15,8 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   runApp(
     MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_)=> MyAppState())
+      ChangeNotifierProvider(create: (_)=> MyAppState()),
+      ChangeNotifierProvider(create: (_)=> MovieAppProvider())
     ],
     child: MyApp(),
     ),
@@ -72,12 +75,12 @@ class _MyHomePageState extends State<MyHomePage> {
       return Scaffold(body: CustomNavigationRail(widget: widget));
     }
 
-    /*if (Platform.isIOS) {
+    if (Platform.isIOS) {
       return CupertinoPageScaffold(
         navigationBar: CupertinoNavigationBar.large(largeTitle: Text("Test")),
         child: Text("test"),
       );
-    }*/
+    }
     return Container();
   }
 }
@@ -124,59 +127,6 @@ class CustomNavigationRail extends StatelessWidget {
             ],
           );
         }
-    );
-  }
-}
-
-// The "frontpage", where we generate word pairs
-class GeneratorPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current;
-    String currentTitle = appState.currentTitle;
-
-    // Changing the icon of the "like" button when it is clicked
-    IconData icon;
-    if (appState.favourites.contains(pair)) {
-      icon = Icons.favorite;
-    } else {
-      icon = Icons.favorite_border;
-    }
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(flex: 3, child: HistoryListView(),),
-          SizedBox(height: 10),
-          NameCard(pair: pair),
-          SizedBox(height: 10),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ElevatedButton.icon(
-                onPressed: () {
-                  appState.toggleFavourite();
-                },
-                icon: Icon(icon),
-                label: Text('Like'),
-              ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () {
-                  appState.getNext();
-                },
-                child: Text('Next'),
-              ),
-            ],
-          ),
-          // Showing the title of a movie pulled from the API in the UI
-          Text(currentTitle),
-          TextButton(onPressed: appState.getPopularMovies, child: Text("Get movie title")),
-          Spacer(flex: 2),
-        ],
-      ),
     );
   }
 }
