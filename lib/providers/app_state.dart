@@ -3,8 +3,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:movie_app/models/movie.dart';
 
 class MyAppState extends ChangeNotifier {
+  List<Movie> movies = [];
   var current = WordPair.random();
   var history = <WordPair>[];
   String currentTitle = "a";
@@ -61,14 +63,16 @@ class MyAppState extends ChangeNotifier {
     // Extracting the title of a movie to show in the UI
     var data = jsonDecode(response.body) as Map<String, dynamic>;
 
-    List movies = data["results"];
+    List moviesJson = data["results"];
 
-    List<String> titles = movies.map((movie){
+    movies = moviesJson.map((moviesJson) => Movie.fromJson(moviesJson)).toList();
+
+    /*List<String> titles = movies.map((movie){
       return movie["original_title"] as String;
     }).toList();
 
     print(titles);
-    currentTitle = titles.first;
+    currentTitle = titles.first;*/
     notifyListeners();
   }
 }
