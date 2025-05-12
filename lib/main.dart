@@ -72,7 +72,27 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
 
     if (Platform.isAndroid) {
-      return Scaffold(body: CustomNavigationRail(widget: widget));
+      return Scaffold(
+        body: widget.child,
+        bottomNavigationBar: BottomNavigationBar(
+          items: [
+            BottomNavigationBarItem(
+              label: 'Home',
+              icon: GestureDetector(
+                child: Icon(Icons.home),
+                onTap: () => context.go("/"),
+              ),
+            ),
+            BottomNavigationBarItem(
+              label: "Favorites",
+              icon: GestureDetector(
+                child: Icon(Icons.favorite),
+                onTap: () => context.go("/favorites"),
+              ),
+            ),
+          ],
+        ),
+        );
     }
 
     if (Platform.isIOS) {
