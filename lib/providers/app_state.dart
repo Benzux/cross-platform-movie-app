@@ -46,7 +46,7 @@ class MyAppState extends ChangeNotifier {
   }
 
   // Function used for getting info about movies from the API
-  Future<void> getPopularMovies() async {
+  Future<List<Movie>> getPopularMovies() async {
     final Uri url = Uri.parse("https://api.themoviedb.org/3/movie/popular");
 
     var response = await http.get(
@@ -65,7 +65,7 @@ class MyAppState extends ChangeNotifier {
 
     List moviesJson = data["results"];
 
-    movies = moviesJson.map((moviesJson) => Movie.fromJson(moviesJson)).toList();
+    return moviesJson.map((moviesJson) => Movie.fromJson(moviesJson)).toList();
 
     /*List<String> titles = movies.map((movie){
       return movie["original_title"] as String;
@@ -73,6 +73,6 @@ class MyAppState extends ChangeNotifier {
 
     print(titles);
     currentTitle = titles.first;*/
-    notifyListeners();
+    //notifyListeners();
   }
 }
