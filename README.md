@@ -1,16 +1,10 @@
 # movie_app
 
-A new Flutter project.
+An app that allows users to "like" movies pulled from a database by swiping them right
+Liked movies are stored in a list in the backend when both are running
 
 ## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Ensure that you have an Android emulator (installed via Android Studio) ready to go
+2. Turn on the backend locally (separate repository)
+3. Run the app with `flutter run`, choose the currently running Android emulator if prompted
+4. Test out the app by swiping movies left or right, keeping an eye on the backend console, changing the username and repeating!
